@@ -1654,7 +1654,7 @@ function () {
       for (var i = 0; i < length * 4; i += 4) {
         channel[i / 4] = // Average of RGB
         (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3 // Amplitude modulated by A
-        * (pixels[i + 3] / 255) * 2 / 255 - 1;
+        * (pixels[i + 3] / 255) / 255 * 2 - 1;
       }
 
       return buffer;
@@ -1798,7 +1798,7 @@ function (_Controller) {
               case 0:
                 this.elements.input.value = '';
                 this.image = {
-                  result: 'images/placeholder.jpg'
+                  result: 'https://raw.githubusercontent.com/CaelanStewart/idmf-faces/master/images/placeholder.jpg'
                 };
                 _context.next = 4;
                 return this.updatePreview();
@@ -1830,13 +1830,14 @@ function (_Controller) {
   }, {
     key: "attachEvents",
     value: function attachEvents() {
+      this.elements.input.addEventListener('change', this.onInputChange);
       this.elements.play.addEventListener('click', this.onPlayClick);
       this.elements.stop.addEventListener('click', this.onStopClick);
     }
   }, {
-    key: "onPlayClick",
+    key: "onInputChange",
     value: function () {
-      var _onPlayClick = _asyncToGenerator(
+      var _onInputChange = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
@@ -1852,24 +1853,65 @@ function (_Controller) {
                 return this.updatePreview();
 
               case 5:
-                _context2.next = 7;
-                return this.play();
-
-              case 7:
-                _context2.next = 12;
+                _context2.next = 10;
                 break;
 
-              case 9:
-                _context2.prev = 9;
+              case 7:
+                _context2.prev = 7;
                 _context2.t0 = _context2["catch"](0);
-                this.handleError(_context2.t0);
+                console.error(_context2.t0);
 
-              case 12:
+              case 10:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[0, 9]]);
+        }, _callee2, this, [[0, 7]]);
+      }));
+
+      function onInputChange() {
+        return _onInputChange.apply(this, arguments);
+      }
+
+      return onInputChange;
+    }()
+  }, {
+    key: "onPlayClick",
+    value: function () {
+      var _onPlayClick = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.prev = 0;
+                _context3.next = 3;
+                return this.updateImage();
+
+              case 3:
+                _context3.next = 5;
+                return this.updatePreview();
+
+              case 5:
+                _context3.next = 7;
+                return this.play();
+
+              case 7:
+                _context3.next = 12;
+                break;
+
+              case 9:
+                _context3.prev = 9;
+                _context3.t0 = _context3["catch"](0);
+                this.handleError(_context3.t0);
+
+              case 12:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this, [[0, 9]]);
       }));
 
       function onPlayClick() {
@@ -1892,25 +1934,25 @@ function (_Controller) {
     value: function () {
       var _updateImage = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
         var imageLoader;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 imageLoader = new image_loader__WEBPACK_IMPORTED_MODULE_1__["default"](this.elements.input);
-                _context3.next = 3;
+                _context4.next = 3;
                 return imageLoader.getDataUrl();
 
               case 3:
-                this.image = _context3.sent;
+                this.image = _context4.sent;
 
               case 4:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
       function updateImage() {
@@ -1924,25 +1966,25 @@ function (_Controller) {
     value: function () {
       var _updatePreview = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
         var _this = this;
 
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
                 this.elements.preview.setAttribute('src', this.image.result);
-                _context4.next = 3;
+                _context5.next = 3;
                 return Object(_util__WEBPACK_IMPORTED_MODULE_6__["promiseToCallMeBack"])(function (callback) {
                   imagesloaded__WEBPACK_IMPORTED_MODULE_5___default()(_this.elements.preview, callback);
                 });
 
               case 3:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
 
       function updatePreview() {
@@ -1976,14 +2018,14 @@ function (_Controller) {
     value: function () {
       var _play = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
                 this.canvas.setDimensions(this.getPreviewNaturalDimensions());
                 this.canvas.clear();
-                _context5.next = 4;
+                _context6.next = 4;
                 return this.canvas.drawImageFromDataUrl(this.image.result);
 
               case 4:
@@ -1992,10 +2034,10 @@ function (_Controller) {
 
               case 6:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, this);
+        }, _callee6, this);
       }));
 
       function play() {

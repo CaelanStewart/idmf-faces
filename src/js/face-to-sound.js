@@ -25,8 +25,7 @@ class FaceToSound {
                     (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3
                     // Amplitude modulated by A
                     * (pixels[i + 3] / 255)
-                    * 2
-                ) / 255
+                ) / 255 * 2
             ) - 1;
         }
 

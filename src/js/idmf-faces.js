@@ -22,7 +22,7 @@ class IDMFFaces extends Controller {
         this.elements.input.value = '';
 
         this.image = {
-            result: 'images/placeholder.jpg'
+            result: 'https://raw.githubusercontent.com/CaelanStewart/idmf-faces/master/images/placeholder.jpg'
         };
 
         await this.updatePreview();
@@ -38,8 +38,18 @@ class IDMFFaces extends Controller {
     }
 
     attachEvents() {
+        this.elements.input.addEventListener('change', this.onInputChange);
         this.elements.play.addEventListener('click', this.onPlayClick);
         this.elements.stop.addEventListener('click', this.onStopClick);
+    }
+
+    async onInputChange() {
+        try {
+            await this.updateImage();
+            await this.updatePreview();
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     async onPlayClick() {
