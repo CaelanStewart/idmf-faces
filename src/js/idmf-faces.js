@@ -48,6 +48,7 @@ class IDMFFaces extends Controller {
             await this.updateImage();
             await this.updatePreview();
         } catch (error) {
+            // Don't throw error here, just log it, since it was triggered implicitly by the user
             console.error(error);
         }
     }
