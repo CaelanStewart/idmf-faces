@@ -1,14 +1,18 @@
+import {promiseToCallMeBack} from "./util";
+
 class FaceToSound {
     constructor(canvas) {
         this.canvas = canvas;
         this.audio = new AudioContext();
+
+        this.currentSource = null;
     }
 
-    getAudioBuffer() {
+    getAudioBuffer(sampleRate) {
         let canvas = this.canvas,
             length = canvas.getPixelCount(),
             audio = this.audio,
-            buffer = audio.createBuffer(1, length, audio.sampleRate / 2),
+            buffer = audio.createBuffer(1, length, sampleRate),
             channel = buffer.getChannelData(0),
             // channel = new Array(length),
             data = canvas.getImageData(),
@@ -29,16 +33,33 @@ class FaceToSound {
         return buffer;
     }
 
-    play() {
-        let buffer = this.getAudioBuffer(),
+    stop() {
+        if (this.currentSource) {
+            this.currentSource.stop();
+        } else {
+            throw new Error('You can\'t stop what isn\'t playing. Can you even hear? Do you even have your fucking speakers turned up?');
+        }
+    }
+
+    async play(sampleRate) {
+        let buffer = this.getAudioBuffer(sampleRate),
             source = this.audio.createBufferSource();
+
+        this.currentSource = source;
 
         source.buffer = buffer;
 
         source.connect(this.audio.destination);
 
         source.start();
-        console.log(buffer);
+
+        await promiseToCallMeBack(callback => {
+            source.onended = callback;
+        });
+
+        this.currentSource = null;
+
+        console.log('finished playing source');
     }
 }
 

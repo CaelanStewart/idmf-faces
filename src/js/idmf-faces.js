@@ -13,6 +13,7 @@ class IDMFFaces extends Controller {
         this.attachEvents();
 
         this.canvas = new Canvas(this.elements.canvas);
+        this.faceToSound = new FaceToSound();
 
         this.reset();
     }
@@ -29,29 +30,40 @@ class IDMFFaces extends Controller {
 
     cacheElements() {
         this.elements.input = document.querySelector('#input');
-        this.elements.button = document.querySelector('#button');
+        this.elements.play = document.querySelector('#play');
+        this.elements.stop = document.querySelector('#stop');
         this.elements.preview = document.querySelector('#preview');
         this.elements.canvas = document.querySelector('#canvas');
+        this.elements.sampleRate = document.querySelector('#sample-rate');
     }
 
     attachEvents() {
-        this.elements.button.addEventListener('click', this.onButtonClick);
+        this.elements.play.addEventListener('click', this.onPlayClick);
+        this.elements.stop.addEventListener('click', this.onStopClick);
     }
 
-    async onButtonClick() {
-        await this.updateImage();
-        await this.updatePreview();
-        await this.renderAudio();
+    async onPlayClick() {
+        try {
+            await this.updateImage();
+            await this.updatePreview();
+            await this.play();
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    onStopClick() {
+        try {
+            this.faceToSound.stop();
+        } catch (error) {
+            this.handleError(error);
+        }
     }
 
     async updateImage() {
         let imageLoader = new ImageLoader(this.elements.input);
 
-        try {
-            this.image = await imageLoader.getDataUrl();
-        } catch (error) {
-            this.handleError(error);
-        }
+        this.image = await imageLoader.getDataUrl();
     }
 
     async updatePreview() {
@@ -69,7 +81,18 @@ class IDMFFaces extends Controller {
         }
     }
 
-    async renderAudio() {
+    getSampleRate() {
+        let raw = this.elements.sampleRate.value,
+            rate = parseInt(raw, 10);
+
+        if (isNaN(rate) || '' + raw !== raw) {
+            throw new Error('You fucking plonker, enter an integer sample-rate why don\'t ya.');
+        }
+
+        return rate;
+    }
+
+    async play() {
         this.canvas.setDimensions(this.getPreviewNaturalDimensions());
         this.canvas.clear();
 
@@ -77,7 +100,9 @@ class IDMFFaces extends Controller {
 
         this.faceToSound = new FaceToSound(this.canvas);
 
-        this.faceToSound.play()
+        this.faceToSound.play(
+            this.getSampleRate()
+        )
     }
 }
 

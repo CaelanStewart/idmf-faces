@@ -1611,11 +1611,22 @@ function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./src/js/util.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
 
 var FaceToSound =
 /*#__PURE__*/
@@ -1625,15 +1636,16 @@ function () {
 
     this.canvas = canvas;
     this.audio = new AudioContext();
+    this.currentSource = null;
   }
 
   _createClass(FaceToSound, [{
     key: "getAudioBuffer",
-    value: function getAudioBuffer() {
+    value: function getAudioBuffer(sampleRate) {
       var canvas = this.canvas,
           length = canvas.getPixelCount(),
           audio = this.audio,
-          buffer = audio.createBuffer(1, length, audio.sampleRate / 2),
+          buffer = audio.createBuffer(1, length, sampleRate),
           channel = buffer.getChannelData(0),
           // channel = new Array(length),
       data = canvas.getImageData(),
@@ -1648,48 +1660,57 @@ function () {
       return buffer;
     }
   }, {
-    key: "play",
-    value: function play() {
-      var buffer = this.getAudioBuffer(),
-          source = this.audio.createBufferSource();
-      source.buffer = buffer;
-      source.connect(this.audio.destination);
-      source.start();
-      console.log(buffer);
+    key: "stop",
+    value: function stop() {
+      if (this.currentSource) {
+        this.currentSource.stop();
+      } else {
+        throw new Error('You can\'t stop what isn\'t playing. Can you even hear? Do you even have your fucking speakers turned up?');
+      }
     }
+  }, {
+    key: "play",
+    value: function () {
+      var _play = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(sampleRate) {
+        var buffer, source;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                buffer = this.getAudioBuffer(sampleRate), source = this.audio.createBufferSource();
+                this.currentSource = source;
+                source.buffer = buffer;
+                source.connect(this.audio.destination);
+                source.start();
+                _context.next = 7;
+                return Object(_util__WEBPACK_IMPORTED_MODULE_1__["promiseToCallMeBack"])(function (callback) {
+                  source.onended = callback;
+                });
+
+              case 7:
+                this.currentSource = null;
+                console.log('finished playing source');
+
+              case 9:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function play(_x) {
+        return _play.apply(this, arguments);
+      }
+
+      return play;
+    }()
   }]);
 
   return FaceToSound;
-}(); // var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-//
-// // Create an empty three-second stereo buffer at the sample rate of the AudioContext
-// var myArrayBuffer = audioCtx.createBuffer(2, audioCtx.sampleRate * 3, audioCtx.sampleRate);
-//
-// // Fill the buffer with white noise;
-// // just random values between -1.0 and 1.0
-// for (var channel = 0; channel < myArrayBuffer.numberOfChannels; channel++) {
-//     // This gives us the actual array that contains the data
-//     var nowBuffering = myArrayBuffer.getChannelData(channel);
-//     for (var i = 0; i < myArrayBuffer.length; i++) {
-//         // Math.random() is in [0; 1.0]
-//         // audio needs to be in [-1.0; 1.0]
-//         nowBuffering[i] = Math.random() * 2 - 1;
-//     }
-// }
-// // Get an AudioBufferSourceNode.
-// // This is the AudioNode to use when we want to play an AudioBuffer
-// var source = audioCtx.createBufferSource();
-//
-// // set the buffer in the AudioBufferSourceNode
-// source.buffer = myArrayBuffer;
-//
-// // connect the AudioBufferSourceNode to the
-// // destination so we can hear the sound
-// source.connect(audioCtx.destination);
-//
-// // start the source playing
-// source.start();
-
+}();
 
 /* harmony default export */ __webpack_exports__["default"] = (FaceToSound);
 
@@ -1762,6 +1783,7 @@ function (_Controller) {
       this.cacheElements();
       this.attachEvents();
       this.canvas = new canvas__WEBPACK_IMPORTED_MODULE_3__["default"](this.elements.canvas);
+      this.faceToSound = new face_to_sound__WEBPACK_IMPORTED_MODULE_2__["default"]();
       this.reset();
     }
   }, {
@@ -1799,50 +1821,72 @@ function (_Controller) {
     key: "cacheElements",
     value: function cacheElements() {
       this.elements.input = document.querySelector('#input');
-      this.elements.button = document.querySelector('#button');
+      this.elements.play = document.querySelector('#play');
+      this.elements.stop = document.querySelector('#stop');
       this.elements.preview = document.querySelector('#preview');
       this.elements.canvas = document.querySelector('#canvas');
+      this.elements.sampleRate = document.querySelector('#sample-rate');
     }
   }, {
     key: "attachEvents",
     value: function attachEvents() {
-      this.elements.button.addEventListener('click', this.onButtonClick);
+      this.elements.play.addEventListener('click', this.onPlayClick);
+      this.elements.stop.addEventListener('click', this.onStopClick);
     }
   }, {
-    key: "onButtonClick",
+    key: "onPlayClick",
     value: function () {
-      var _onButtonClick = _asyncToGenerator(
+      var _onPlayClick = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.next = 2;
+                _context2.prev = 0;
+                _context2.next = 3;
                 return this.updateImage();
 
-              case 2:
-                _context2.next = 4;
+              case 3:
+                _context2.next = 5;
                 return this.updatePreview();
 
-              case 4:
-                _context2.next = 6;
-                return this.renderAudio();
+              case 5:
+                _context2.next = 7;
+                return this.play();
 
-              case 6:
+              case 7:
+                _context2.next = 12;
+                break;
+
+              case 9:
+                _context2.prev = 9;
+                _context2.t0 = _context2["catch"](0);
+                this.handleError(_context2.t0);
+
+              case 12:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee2, this, [[0, 9]]);
       }));
 
-      function onButtonClick() {
-        return _onButtonClick.apply(this, arguments);
+      function onPlayClick() {
+        return _onPlayClick.apply(this, arguments);
       }
 
-      return onButtonClick;
+      return onPlayClick;
     }()
+  }, {
+    key: "onStopClick",
+    value: function onStopClick() {
+      try {
+        this.faceToSound.stop();
+      } catch (error) {
+        this.handleError(error);
+      }
+    }
   }, {
     key: "updateImage",
     value: function () {
@@ -1855,26 +1899,18 @@ function (_Controller) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 imageLoader = new image_loader__WEBPACK_IMPORTED_MODULE_1__["default"](this.elements.input);
-                _context3.prev = 1;
-                _context3.next = 4;
+                _context3.next = 3;
                 return imageLoader.getDataUrl();
 
-              case 4:
+              case 3:
                 this.image = _context3.sent;
-                _context3.next = 10;
-                break;
 
-              case 7:
-                _context3.prev = 7;
-                _context3.t0 = _context3["catch"](1);
-                this.handleError(_context3.t0);
-
-              case 10:
+              case 4:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, this, [[1, 7]]);
+        }, _callee3, this);
       }));
 
       function updateImage() {
@@ -1924,9 +1960,21 @@ function (_Controller) {
       };
     }
   }, {
-    key: "renderAudio",
+    key: "getSampleRate",
+    value: function getSampleRate() {
+      var raw = this.elements.sampleRate.value,
+          rate = parseInt(raw, 10);
+
+      if (isNaN(rate) || '' + raw !== raw) {
+        throw new Error('You fucking plonker, enter an integer sample-rate why don\'t ya.');
+      }
+
+      return rate;
+    }
+  }, {
+    key: "play",
     value: function () {
-      var _renderAudio = _asyncToGenerator(
+      var _play = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
@@ -1940,7 +1988,7 @@ function (_Controller) {
 
               case 4:
                 this.faceToSound = new face_to_sound__WEBPACK_IMPORTED_MODULE_2__["default"](this.canvas);
-                this.faceToSound.play();
+                this.faceToSound.play(this.getSampleRate());
 
               case 6:
               case "end":
@@ -1950,11 +1998,11 @@ function (_Controller) {
         }, _callee5, this);
       }));
 
-      function renderAudio() {
-        return _renderAudio.apply(this, arguments);
+      function play() {
+        return _play.apply(this, arguments);
       }
 
-      return renderAudio;
+      return play;
     }()
   }]);
 
