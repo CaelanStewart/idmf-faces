@@ -1,0 +1,32 @@
+.pseudo-hidden {
+  width: 0;
+  height: 0;
+  display: block;
+  position: absolute;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#toolbar {
+  width: 100%;
+  background: #EEEEEE;
+  padding: 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+#preview {
+  max-width: 50%;
+  margin: 15px;
+}
+
+
+/*# sourceMappingURL=idmf-faces.css.map*/
