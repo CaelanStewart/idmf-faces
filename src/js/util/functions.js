@@ -27,3 +27,19 @@ export function promiseToCallMeBack(hook) {
 
     return promise;
 }
+
+export function async(callback, ...args) {
+    if (callback) {
+        return async().then(() => callback(...args));
+    }
+
+    return promiseToCallMeBack(callback => {
+        callback(...args);
+    });
+}
+
+export function sleep(delay = 0) {
+    return promiseToCallMeBack(callback => {
+        setTimeout(callback, delay);
+    })
+}

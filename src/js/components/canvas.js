@@ -1,8 +1,9 @@
-import {promiseToCallMeBack} from "./util";
+import Component from 'component';
+import {promiseToCallMeBack} from "util/functions";
 
-class Canvas {
-    constructor(canvas) {
-        this.canvas = canvas;
+class Canvas extends Component {
+    ready() {
+        this.canvas = this.query('canvas');
 
         this.updateContext();
     }
@@ -23,6 +24,13 @@ class Canvas {
 
             image.src = dataUrl;
         });
+
+        this.setDimensions({
+            width: image.naturalWidth,
+            height: image.naturalHeight
+        });
+
+        this.clear();
 
         this.context.drawImage(image, x, y);
     }

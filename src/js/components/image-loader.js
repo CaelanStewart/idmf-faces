@@ -1,12 +1,9 @@
-import {promiseToCallMeBack} from 'util.js';
+import Component from 'component';
+import {promiseToCallMeBack} from 'util/functions';
 
-class ImageLoader {
-    constructor(input) {
-        if (input instanceof HTMLInputElement) {
-            this.input = input;
-        } else {
-            throw new Error('Invalid input element specified: HTMLInputElement required.');
-        }
+class ImageLoader extends Component {
+    ready() {
+        this.input = this.query('input[type="file"]');
     }
 
     async getDataUrl() {
@@ -19,7 +16,7 @@ class ImageLoader {
         let file = this.getFile();
 
         if ( ! file) {
-            throw new Error('Failed to load file. Have you actually uploaded a fucking file?');
+            this.throwMissingFileError();
         }
 
         let fileReader = new FileReader();
@@ -31,6 +28,10 @@ class ImageLoader {
         });
 
         return event.target;
+    }
+
+    throwMissingFileError() {
+        throw new Error('Failed to load file. Have you actually uploaded a fucking file?');
     }
 
     getFile() {

@@ -7,21 +7,52 @@
         <link rel="stylesheet" href="dist/idmf-faces.css" />
     </head>
     <body>
-        <div id="wrapper">
-            <div id="toolbar">
-                <input type="file" id="input" />
+        <component name="IdmfFaces" id="wrapper">
+            <component name="Player">
+                <div class="pseudo-hidden">
+                    <component name="Canvas">
+                        <canvas id="canvas"></canvas>
+                    </component>
+                </div>
+                <component name="Image" class="inline-block">
+                    <input type="file" id="input" />
+                </component>
                 <button type="button" id="play">Play my face like a mono record</button>
                 <button type="button" id="stop">Stop</button>
-                <label for="sample-rate">Sample Rate</label>
-                <input type="text" id="sample-rate" value="22400" />
-            </div>
+            </component>
 
-            <img id="preview" src="https://raw.githubusercontent.com/CaelanStewart/idmf-faces/master/images/placeholder.jpg" />
-
-            <div class="pseudo-hidden">
-                <canvas id="canvas"></canvas>
+            <div class="container">
+                <div id="panels">
+                    <div class="panel">
+                        <component name="Preview">
+                            <img id="preview" src="https://raw.githubusercontent.com/CaelanStewart/idmf-faces/master/images/placeholder.jpg" />
+                        </component>
+                    </div>
+                    <div class="panel">
+                        <component name="Inputs">
+                            <table cellpadding="10" cellspacing="0" border="0">
+                                <tr>
+                                    <td width="50%">
+                                        <component name="SampleRate">
+                                            <label for="sample-rate">Sample Rate</label><br />
+                                            <input type="range" id="sample-rate" value="22400" min="3000" max="384000" step="100" />
+                                            <span class="preview">22400</span>
+                                        </component>
+                                    </td>
+                                    <td width="50%">
+                                        <component name="PitchShift">
+                                            <label for="pitch-shift">Pitch Shift</label><br />
+                                            <input type="range" id="pitch-shift" value="1" min="0" max="10" step="0.01" />
+                                            <span class="preview">1</span>
+                                        </component>
+                                    </td>
+                                </tr>
+                            </table>
+                        </component>
+                    </div>
+                </div>
             </div>
-        </div>
+        </component>
         <script type="text/javascript" src="dist/idmf-faces.js" async></script>
     </body>
 </html>

@@ -6,8 +6,16 @@
   overflow: hidden;
 }
 
+.inline-block {
+  display: inline-block;
+}
+
 * {
   box-sizing: border-box;
+}
+
+component {
+  display: block;
 }
 
 body {
@@ -15,17 +23,48 @@ body {
   padding: 0;
 }
 
-#toolbar {
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+#wrapper,
+.container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.container {
+  padding: 8px;
+}
+
+component[name=Player] {
   width: 100%;
   background: #EEEEEE;
-  padding: 15px;
+  padding: 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
 }
 
 #preview {
+  max-width: 100%;
+}
+
+#panels {
+  width: calc(100% + 16px);
+  margin-left: -8px;
+  display: flex;
+}
+
+#panels .panel {
   max-width: 50%;
-  margin: 15px;
+  padding: 0 8px;
+}
+
+component[name=SampleRate] input,
+component[name=PitchShift] input {
+  vertical-align: middle;
 }
 
 
