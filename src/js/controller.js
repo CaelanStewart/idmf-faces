@@ -35,19 +35,19 @@ class Controller {
     }
 
     bindMethodsToInstance() {
-        let prototype, next = p => (prototype = Object.getPrototypeOf(p || prototype));
-
-        next(this);
+        let prototype, next = () => (prototype = Object.getPrototypeOf(prototype || this));
 
         do {
+			next();
+
             for (let property of Object.getOwnPropertyNames(prototype)) {
-                if (property === 'constructor' || typeof this[property] !== 'function') {
+                if (typeof this[property] !== 'function' || property === 'constructor') {
                     continue;
                 }
 
                 this[property] = this[property].bind(this);
             }
-        } while (next() && prototype.constructor !== Controller);
+        } while (prototype.constructor !== Controller);
     }
 
     getGenericErrorMessage() {

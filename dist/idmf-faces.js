@@ -2242,14 +2242,15 @@ function () {
   }, {
     key: "bindMethodsToInstance",
     value: function bindMethodsToInstance() {
+      var _this = this;
+
       var prototype,
-          next = function next(p) {
-        return prototype = Object.getPrototypeOf(p || prototype);
+          next = function next() {
+        return prototype = Object.getPrototypeOf(prototype || _this);
       };
 
-      next(this);
-
       do {
+        next();
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
@@ -2258,7 +2259,7 @@ function () {
           for (var _iterator = Object.getOwnPropertyNames(prototype)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var property = _step.value;
 
-            if (property === 'constructor' || typeof this[property] !== 'function') {
+            if (typeof this[property] !== 'function' || property === 'constructor') {
               continue;
             }
 
@@ -2278,7 +2279,7 @@ function () {
             }
           }
         }
-      } while (next() && prototype.constructor !== Controller);
+      } while (prototype.constructor !== Controller);
     }
   }, {
     key: "getGenericErrorMessage",
